@@ -1,5 +1,3 @@
-from collections import deque
-
 class Solution:
     def ladderLength(self, beginWord: str, endWord: str, wordList: list[str]) -> int:
         words = set(wordList)
@@ -7,24 +5,19 @@ class Solution:
         if endWord not in words:
             return 0
 
-        if beginWord == endWord:
-            return 1
+        queue = [beginWord]
+        visited = {beginWord}
+        steps = 1
+        head = 0
 
-        front = {beginWord}
-        back = {endWord}
-        words.discard(beginWord)
-        words.discard(endWord)
+        while head < len(queue):
+            for _ in range(len(queue) - head):
+                word = queue[head]
+                head += 1
 
-        length = 1
+                if word == endWord:
+                    return steps
 
-        while front and back:
-            if len(front) > len(back):
-                front, back = back, front
-
-            next_front = set()
-            length += 1
-
-            for word in front:
                 chars = list(word)
 
                 for i in range(len(chars)):
@@ -35,17 +28,17 @@ class Solution:
                             continue
 
                         chars[i] = c
-                        candidate = "".join(chars)
+                        new_word = "".join(chars)
 
-                        if candidate in back:
-                            return length
+                        if new_word in words and new_word not in visited:
+                            if new_word == endWord:
+                                return steps + 1
 
-                        if candidate in words:
-                            next_front.add(candidate)
-                            words.remove(candidate)
+                            visited.add(new_word)
+                            queue.append(new_word)
 
                     chars[i] = original
 
-            front = next_front
+            steps += 1
 
         return 0
